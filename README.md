@@ -5,7 +5,7 @@ Esta práctica se distribuye a través del repositorio GitHub [Práctica 2](http
 y una parte de su gestión se realizará mediante esta web de trabajo colaborativo.  Al contrario que Git,
 GitHub se gestiona completamente desde un entorno gráfico bastante intuitivo. Además, está razonablemente
 documentado, tanto internamente, mediante sus [Guías de GitHub](https://guides.github.com/), como
-externamente, mediante infinidad de tutoriales, guías y vídeos disponibles gratuitamente en el abismo del oscuro internet.
+externamente, mediante infinidad de tutoriales, guías y vídeos disponibles gratuitamente en el abismo del oscuro y del drossiano internet.
 
 
 Inicialización del repositorio de la práctica.
