@@ -27,28 +27,61 @@ typedef struct
   float zcr;
   float p;
   float am;
+  //float init_power;
 } Features;
+/*
+typedef struct
+{
+  int trm;        //Número de tramas tomadas como "inicial". Actuara como indice para el vector init_p[]
+  float init_p[]; //potencias de las tramas tomadas como inciales
+} Data;*/
 
 /* 
  * TODO: Delete and use your own features!
  */
-
 Features compute_features(const float *x, int N)
 {
-  /*
+/*
    * Input: x[i] : i=0 .... N-1 
    * Ouput: computed features
    */
-  /* 
+/* 
    * DELETE and include a call to your own functions
    *
    * For the moment, compute random value between 0 and 1 
    */
+
+  /*
+  static int llamadas = 1; //Cuenta las veces que llamamos a la función
+  Data *d;
+  if (llamadas == 1) //Asumimos primera trama de silencio y calculamos pot. Sera nuestro valor de referencia
+  {
+    d->trm = 0;
+    d->init_p[0] = compute_power(x, N);
+  }
+  */
   Features feat;
   feat.zcr = compute_zcr(x, N, 16000);
   feat.p = compute_power(x, N);
   feat.am = compute_am(x, N);
+/*
+  if (feat.p < d->init_p[0] + 10) 
+  {
+    d->trm++;
+    if (d->trm == llamadas) //Si no superamos el umbral, y nunca lo hemos superado antes, guardamos el power de la trama
+    {
+      d->init_p[d->trm] = feat.p;
+    }
+  }
+  else if ((feat.p >= d->init_p[0] + 10) && (llamadas == d->trm + 1)) //El +1 es para que solo se entre una vez en esta
+                                                                      //condicion
+  {
+    feat.init_power = compute_init_power(d->init_p, d->trm);
+    printf("la potencia de las muestras iniciales es: %f", feat.init_power);
+  }
 
+  llamadas++;
+  */
   return feat;
 }
 
@@ -58,7 +91,7 @@ Features compute_features(const float *x, int N)
 
 VAD_DATA *vad_open(float rate, float alfa0)
 {
-  VAD_DATA *vad_data = malloc(sizeof(VAD_DATA));
+  VAD_DATA *vad_data = malloc(sizeof(VAD_DATA)); //asigna la cantidad de memoria especificada en bytes
   vad_data->state = ST_INIT;
   vad_data->alfa0 = alfa0;
   vad_data->sampling_rate = rate;
@@ -66,6 +99,7 @@ VAD_DATA *vad_open(float rate, float alfa0)
   return vad_data;
 }
 
+//Devuelve el estado de la trama de señal
 VAD_STATE vad_close(VAD_DATA *vad_data)
 {
   /* 
@@ -94,10 +128,15 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x)
    * TODO: You can change this, using your own features,
    * program finite state automaton, define conditions, etc.
    */
-
+ // static int trama = 1;
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
-
+  
+  /*
+    if (trama == 1){
+      vad_data->k0 = f.p + vad_data->alfa0;
+    }
+    */
   switch (vad_data->state)
   {
   case ST_INIT:
