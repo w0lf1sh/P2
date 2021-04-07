@@ -27,7 +27,6 @@ typedef struct
   float zcr;
   float p;
   float am;
-  //float init_power;
 } Features;
 /*
 typedef struct
@@ -41,11 +40,11 @@ typedef struct
  */
 Features compute_features(const float *x, int N)
 {
-/*
+  /*
    * Input: x[i] : i=0 .... N-1 
    * Ouput: computed features
    */
-/* 
+  /* 
    * DELETE and include a call to your own functions
    *
    * For the moment, compute random value between 0 and 1 
@@ -64,7 +63,7 @@ Features compute_features(const float *x, int N)
   feat.zcr = compute_zcr(x, N, 16000);
   feat.p = compute_power(x, N);
   feat.am = compute_am(x, N);
-/*
+  /*
   if (feat.p < d->init_p[0] + 10) 
   {
     d->trm++;
@@ -96,6 +95,8 @@ VAD_DATA *vad_open(float rate, float alfa0)
   vad_data->alfa0 = alfa0;
   vad_data->sampling_rate = rate;
   vad_data->frame_length = rate * FRAME_TIME * 1e-3;
+  vad_data->init_power = 0;
+  vad_data->trama = 0;
   return vad_data;
 }
 
@@ -128,20 +129,25 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x)
    * TODO: You can change this, using your own features,
    * program finite state automaton, define conditions, etc.
    */
- // static int trama = 1;
+
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
-  
-  /*
-    if (trama == 1){
-      vad_data->k0 = f.p + vad_data->alfa0;
-    }
-    */
+
   switch (vad_data->state)
   {
   case ST_INIT:
-    vad_data->k0 = f.p + vad_data->alfa0;
+
+    if (vad_data->trama < 10)
+    {
+      vad_data->init_power = vad_data->init_power + compute_init_power(f.p);
+      vad_data->trama++;
+      break;
+    }
+
+    vad_data->init_power = 10 * log10(vad_data->init_power / vad_data->trama);
+    vad_data->k0 = vad_data->init_power +3.5; //->k0 = f.p + vad_data->alfa0;  //
     vad_data->state = ST_SILENCE;
+
     break;
 
   case ST_SILENCE:

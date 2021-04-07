@@ -39,13 +39,8 @@ float compute_zcr(const float *x, unsigned int N, float fm)
   zcr = (zcr / (N - 1)) * (fm / 2);
   return zcr;
 }
-/*
-float compute_init_power(float p) //siendo N el tamaño del vector pot
-{ 
-  static float init_power = 0;
-    
-  init_power = init_power + pow(10, (p / 10));
 
-  return init_power;
+float compute_init_power(float p) 
+{ 
+  return pow(10, (p / 10));
 }
-*/
