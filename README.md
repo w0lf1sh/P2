@@ -105,6 +105,7 @@ Ejercicios
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
 
+<img src="/img/wavesurfer1.PNG/" align ="center">
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
@@ -160,3 +161,11 @@ Ejercicios
 Recuerde comprobar que el repositorio cuenta con los códigos correctos y en condiciones de ser 
 correctamente compilados con la orden `meson bin; ninja -C bin`. El programa generado (`bin/vad`) será
 el usado, sin más opciones, para realizar la evaluación *ciega* del sistema.
+
+Memoria: Detección de actividad vocal (VAD)
+----------------------------------------------
+En la segunda práctica del laboratorio de PAV, vamos a realizar un detector de voz a través de la extracción de características (sobre todo la potencia) de la señal. Los criterios que usemos para decidir cuando un segmento de señal es voz o silencio, lo implementaremos a través de un FSA o autómata de estados finitos que decidira su estado actual y futuro en función de una variable externa (en nuestro caso, la potencia de la trama).
+
+Como hicimos en la primera memoria, expondremos primero las tareas, seguidamente los ejercicios principales, para luego acabar con los ejercicios de ampliación y los problemas encontrados para que de esta manera podamos recurrir a esta memoria en caso de recuperar información más adelante.
+
+### Tareas 
