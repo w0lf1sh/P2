@@ -28,12 +28,7 @@ typedef struct
   float p;
   float am;
 } Features;
-/*
-typedef struct
-{
-  int trm;        //Número de tramas tomadas como "inicial". Actuara como indice para el vector init_p[]
-  float init_p[]; //potencias de las tramas tomadas como inciales
-} Data;*/
+
 
 /* 
  * TODO: Delete and use your own features!
@@ -50,37 +45,11 @@ Features compute_features(const float *x, int N)
    * For the moment, compute random value between 0 and 1 
    */
 
-  /*
-  static int llamadas = 1; //Cuenta las veces que llamamos a la función
-  Data *d;
-  if (llamadas == 1) //Asumimos primera trama de silencio y calculamos pot. Sera nuestro valor de referencia
-  {
-    d->trm = 0;
-    d->init_p[0] = compute_power(x, N);
-  }
-  */
   Features feat;
   feat.zcr = compute_zcr(x, N, 16000);
   feat.p = compute_power(x, N);
   feat.am = compute_am(x, N);
-  /*
-  if (feat.p < d->init_p[0] + 10) 
-  {
-    d->trm++;
-    if (d->trm == llamadas) //Si no superamos el umbral, y nunca lo hemos superado antes, guardamos el power de la trama
-    {
-      d->init_p[d->trm] = feat.p;
-    }
-  }
-  else if ((feat.p >= d->init_p[0] + 10) && (llamadas == d->trm + 1)) //El +1 es para que solo se entre una vez en esta
-                                                                      //condicion
-  {
-    feat.init_power = compute_init_power(d->init_p, d->trm);
-    printf("la potencia de las muestras iniciales es: %f", feat.init_power);
-  }
 
-  llamadas++;
-  */
   return feat;
 }
 
@@ -145,30 +114,49 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x)
     }
 
     vad_data->init_power = 10 * log10(vad_data->init_power / vad_data->trama);
-    vad_data->k0 = vad_data->init_power +3.5; //->k0 = f.p + vad_data->alfa0;  //
+    vad_data->k0 = vad_data->init_power + 2; //mejor 3 /2
     vad_data->state = ST_SILENCE;
+
+    vad_data->k1 = vad_data->k0 + 1.5;  // "2nda frontera" mejor 0: 90,520 /1.5 90.378
 
     break;
 
   case ST_SILENCE:
-    if (f.p > vad_data->k0)
-      vad_data->state = ST_VOICE;
+    /*if (f.p > vad_data->k0)
+      vad_data->state = ST_VOICE;*/
+
+   if (f.p > vad_data->k0) //Si superamos k0, MAYBE VOICE. Esperamos a que alguno de las siguientes tramas supere k1 
+      vad_data->state = ST_UNDEF; //MAYBE VOICE 
+
+   
     break;
 
   case ST_VOICE:
-    if (f.p < vad_data->k0)
-      vad_data->state = ST_SILENCE;
+    /*if (f.p < vad_data->k0)
+      vad_data->state = ST_SILENCE;*/
+
+    if (f.p < vad_data->k1) /// Si bajamos de k1, MAYBE SILENCE
+      vad_data->state = ST_UNDEF; ///MAYBE SILENCE
+    
     break;
 
   case ST_UNDEF:
+    if (f.p > vad_data->k1)
+      vad_data->state = ST_VOICE; //Seguro que es trama voz, VOICE
+    
+    if(f.p < vad_data->k0)
+      vad_data->state = ST_SILENCE; //Seguro que es trama de silencio, SILENCE
+    
     break;
   }
 
   if (vad_data->state == ST_SILENCE ||
       vad_data->state == ST_VOICE)
-    return vad_data->state;
+      
+        return vad_data->state;
   else
-    return ST_UNDEF;
+        return ST_UNDEF;
+  
 }
 
 void vad_show_state(const VAD_DATA *vad_data, FILE *out)

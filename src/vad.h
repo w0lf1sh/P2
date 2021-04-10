@@ -16,7 +16,8 @@ typedef struct {
   float sampling_rate;
   unsigned int frame_length;
   float last_feature; /* for debuggin purposes */
-  float k0, alfa0;
+  float k0, k1;
+  float alfa0;
 
   float init_power;  //Estimación del cálculo de la potencia inicial de la señal
   int trama; // Nos contara el número de trama que estamos analizando
