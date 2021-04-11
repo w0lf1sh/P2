@@ -128,7 +128,7 @@ Ejercicios
 
 	#### Puesta en marcha de una primera versión del detector
 
-	Procedemos a explicar, el primer aproximamiento qu tuvimos con el detector de actividad local. Nuestro FSA usará principalmente como variable externa la potencia de la trama de la señal para cambiar entre los estados del mismo.
+	Procedemos a explicar, el primer aproximamiento que tuvimos con el detector de actividad local. Nuestro FSA usará principalmente como variable externa la potencia de la trama de la señal para cambiar entre los estados del mismo.
 	Entonces primero tendremos que añadir a nuestro proyecto pav_analysis.c, desarollado en la práctica 1 para la extracción de las caracteristicas de las tramas como pueden ser: la potencia, la tasa de cruces por cero o la amplitud media. 
 
 	<img src="/img/anadir_pavanalysis.PNG/" align ="center">
@@ -202,11 +202,11 @@ Ejercicios
 	 <img src="/img/umbrales2.PNG/" align ="center">
 	 <img src="/img/umbrales3.PNG/" align ="center">
 	 
-	 Y aseguramos que al acabar la señal en cuestión, no se pueda escriir un estado como UNDEF:
+	 Y aseguramos que al acabar la señal en cuestión, no se pueda escribir un estado como UNDEF:
 
 	 <img src="/img/umbrales4.PNG/" align ="center">
 
-	 Si evaluamos nuestro programa en la base de datos, modificando los valores de los umbrales manualmente, llegamos a un FSCORE golbal de 90,378%
+	 Si evaluamos nuestro programa en la base de datos, modificando los valores de los umbrales manualmente, llegamos a un FSCORE global de 90,378%
 
 	 <img src="/img/90.PNG/" align ="center">
 	  
@@ -228,7 +228,7 @@ Ejercicios
   
   Nuevas labels:
 
-  <img src="/img/new_labels.PNG/" align ="center">
+  <img src="/img/new_labeles.PNG/" align ="center">
 
   ##### Evaluación sobre nuestro fichero .wav
   
@@ -259,7 +259,7 @@ Ejercicios
 
   <img src="/img/0_1.PNG/" align ="center">
 
-  Tras haber escrito en el .vad el tipo de trama estimada por el automata, en caso de que sea silencio, tendremos que volver hacia atrás exactamente frame_size (ya que la acabamos de escribir), para posteriormente sobreescribir los los valores de esta trama, por 0’s (gracias al buffer_zeros ya dado). Usamos la función sf_seek() para movernos al principio de la trama que acabamos de escribir.
+  Tras haber escrito en el .vad el tipo de trama estimada por el automata, en caso de que sea silencio, tendremos que volver hacia atrás exactamente frame_size (ya que la acabamos de escribir), para posteriormente sobreescribir los valores de esta trama, por 0’s (gracias al buffer_zeros ya dado). Usamos la función sf_seek() para movernos al principio de la trama que acabamos de escribir.
 
   <img src="/img/sf_seek.PNG/" align ="center">
 
@@ -271,7 +271,7 @@ Ejercicios
 
   <img src="/img/0_3.PNG/" align ="center">
 
-  Percibimos absolutmente toda la voz, con las tramas de ruido en silencio total. Para poder verlo gráficamente procedemos a realizar un simple código en python para poder compararlo.
+  Percibimos absolutamente toda la voz, con las tramas de ruido en silencio total. Para poder verlo gráficamente procedemos a realizar un simple código en python para poder compararlo.
 
   Código en python: 
 
