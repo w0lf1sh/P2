@@ -288,16 +288,41 @@ Ejercicios
 - Si ha usado `docopt_c` para realizar la gestión de las opciones y argumentos del programa `vad`, inserte
   una captura de pantalla en la que se vea el mensaje de ayuda del programa.
 
+  Busquemos una manera más inteligente de decidir la diferencia de dbs entre silencio y voz (umbral decisión).
+  Usaremos el docopt (language for description of command-line interfaces). Lo usaremos para pasar el valor de diferencia.
+  Modifiquemos primero el fichero vad.docopt. La diferencia que estableceremos por consola tendra como nombre "alfa0".
 
+  <img src="/img/doc1.PNG/" align ="center">
+
+  Ahora cuando compilemos (con la ayuda del programa docopt_c.py), se incorporarán estos cambios en vad_docopt.h
+
+  <img src="/img/doc2.PNG/" align ="center">
+  <img src="/img/doc3.PNG/" align ="center">
+
+  Añadimos entonces el nuevo parámetro en la estructura de datos VAD_DATA definida en vad.h:
+
+  <img src="/img/doc4.PNG/" align ="center">
+
+  Seguidamente asignamos el valor de alfa0 en el vad.c y en el fichero main instanciamos el argumeno alfa0, recordando que este se pasa como una cadena de carácteres, por lo que hace falta cambiarlo por un float.
+
+  <img src="/img/doc5.PNG/" align ="center">
+  
 
 ### Contribuciones adicionales y/o comentarios acerca de la práctica
 
 - Indique a continuación si ha realizado algún tipo de aportación suplementaria (algoritmos de detección o 
   parámetros alternativos, etc.).
 
+  A parte de haber realizado los trabajos de ampliación, hemos propuesto un pequeño código en python que nos permite comparar un fichero .wav original con el mismo pero habiendo puesto a 0 las tramas de voz.
+
 - Si lo desea, puede realizar también algún comentario acerca de la realización de la práctica que
   considere de interés de cara a su evaluación.
 
+  Esta práctica, a pesar de haber tenido que realizarla en poco margen de tiempo, nos ha parecido extremadamente interesante por todo el contenido que abarca. El modelo matemática FSA, su mejora y el estudio de las caracteristicas de la señal han sido algunos de los aspectos más instructivos de este laboratorio.
+
+  Aun y habiendo llegado a un humilde 90 y pico por ciento de puntuación global en la base de datos, creemos que si hubiesemos implementado algunas otras caracteristicas para la decisión de si un estado es voz o silencio (por ejemplo el tiempo de una trama, o la taasa de cruces por cero), o hubiesemos distinguido mejor el estado undefined como dos estados "maybe voice" o "maybe silence" para realizar un código de main más claro, podríamos haber mejorado aún más la puntuación.
+
+  Nos quedamos con lo aprendido, y esperamos poder mejorar nuestras marcas de aquí en adelante.
 
 ### Antes de entregar la práctica
 
@@ -305,10 +330,3 @@ Recuerde comprobar que el repositorio cuenta con los códigos correctos y en con
 correctamente compilados con la orden `meson bin; ninja -C bin`. El programa generado (`bin/vad`) será
 el usado, sin más opciones, para realizar la evaluación *ciega* del sistema.
 
-Memoria: Detección de actividad vocal (VAD)
-----------------------------------------------
-En la segunda práctica del laboratorio de PAV, vamos a realizar un detector de voz a través de la extracción de características (sobre todo la potencia) de la señal. Los criterios que usemos para decidir cuando un segmento de señal es voz o silencio, lo implementaremos a través de un FSA o autómata de estados finitos que decidira su estado actual y futuro en función de una variable externa (en nuestro caso, la potencia de la trama).
-
-Como hicimos en la primera memoria, expondremos primero las tareas, seguidamente los ejercicios principales, para luego acabar con los ejercicios de ampliación y los problemas encontrados para que de esta manera podamos recurrir a esta memoria en caso de recuperar información más adelante.
-
-### Tareas 
