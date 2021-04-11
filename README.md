@@ -315,6 +315,12 @@ Ejercicios
 
   A parte de haber realizado los trabajos de ampliación, hemos propuesto un pequeño código en python que nos permite comparar un fichero .wav original con el mismo pero habiendo puesto a 0 las tramas de voz.
 
+  Hemos tenido un pequeño problema con el plot de python porque no nos salía nada una vez ejecutabamos el grafico.py.
+  Por lo que hemos modificado el bashrc para la configuración del XLaunch con nuestro display:
+
+	<img src="/img/bash1.PNG/" align ="center">
+	<img src="/img/bash2.PNG/" align ="center">
+
 - Si lo desea, puede realizar también algún comentario acerca de la realización de la práctica que
   considere de interés de cara a su evaluación.
 
@@ -323,6 +329,8 @@ Ejercicios
   Aun y habiendo llegado a un humilde 90 y pico por ciento de puntuación global en la base de datos, creemos que si hubiesemos implementado algunas otras caracteristicas para la decisión de si un estado es voz o silencio (por ejemplo el tiempo de una trama, o la taasa de cruces por cero), o hubiesemos distinguido mejor el estado undefined como dos estados "maybe voice" o "maybe silence" para realizar un código de main más claro, podríamos haber mejorado aún más la puntuación.
 
   Nos quedamos con lo aprendido, y esperamos poder mejorar nuestras marcas de aquí en adelante.
+
+  P.D: Las respuestas a los ejercicios de aquí, se han ido cogiendo de una "memoria" previa que estabamos realizando a medida que completabamos la práctica. Es posible que en esta [Memoria](https://docs.google.com/document/d/102KvfJR59AU95sfetlRobyF2WO-y05IFTsNGPvg07x8/edit?usp=sharing) haya alguna captura o comentario suplementario que no tenian cabida a las respuestas de este. La evaluación sabemos que se hace con el README.md, pero queríamos dejar un enlace por aqui a la otra memoria por si acaso.
 
 ### Antes de entregar la práctica
 
