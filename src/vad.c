@@ -30,9 +30,7 @@ typedef struct
 } Features;
 
 
-/* 
- * TODO: Delete and use your own features!
- */
+
 Features compute_features(const float *x, int N)
 {
   /*
@@ -122,8 +120,6 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x)
     break;
 
   case ST_SILENCE:
-    /*if (f.p > vad_data->k0)
-      vad_data->state = ST_VOICE;*/
 
    if (f.p > vad_data->k0) //Si superamos k0, MAYBE VOICE. Esperamos a que alguno de las siguientes tramas supere k1 
       vad_data->state = ST_UNDEF; //MAYBE VOICE 
@@ -132,8 +128,6 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x)
     break;
 
   case ST_VOICE:
-    /*if (f.p < vad_data->k0)
-      vad_data->state = ST_SILENCE;*/
 
     if (f.p < vad_data->k1) /// Si bajamos de k1, MAYBE SILENCE
       vad_data->state = ST_UNDEF; ///MAYBE SILENCE

@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
   frame_duration = (float)frame_size / (float)sf_info.samplerate;
   last_state = ST_UNDEF;
-  last_defined_state = ST_SILENCE;
+  last_defined_state = ST_SILENCE; //asumimos que venimos de silencio
 
   for (t = last_t = 0;; t++)
   { /* For each frame ... */

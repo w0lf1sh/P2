@@ -159,17 +159,92 @@ Ejercicios
 
 	<img src="/img/pot.PNG/" align ="center">
 
-	
+	Para implementar esta mejora, primero modificamos pav_analysis.c y su respectivo .h para incluir una nueva función compute_init_power().
 
+	<img src="/img/init_power_func.PNG/" align ="center">
+
+	Añadimos dos características adicionales al tipo de estrucutra VAD_DATA, “init_power” y “trama” propias a la señal. "init_power" nos servira para conservar el valor de potencia que vamos calculando a lo largo que van pasando las tramas. Y la variable "trama" nos servira de contador.
+
+	 <img src="/img/2caract.PNG/" align ="center">
+
+	 Cambiamos la gestión del estado inicial del autómata.
+
+	 <img src="/img/init_power_vad.PNG/" align ="center">
+
+	 Como vemos, mientras no se hayan procesado 10 tramas de la señal (que asumiremos son silencio), se ira sumando la potencia de las tramas (en lineal, gracias a la función compute_init_power()). el autómata no cambiara de estado y se quedara en el estado INIT durante estas 10 tramas.
+	 Una vez se haya sumado la potencia de estas 10 tramas, se calcula la media de la potencia en dBs y se asigna este valor a la variable init_power. Tambien cambiamos asi el valor del primer umbral k0.
+
+	 Ya prácticamente implementado, solo nos falta gestionar lo que se escribe en el archivo .vad que generaremos para a posteriori comparar con los archivos .lab. 
+	 Cambiamos entonces la gestión de escritura en el .vad desde la función main, para que no se escriba un undef en los casos que estamos en el estado ST_INIT, si no que en el caso de las tramas iniciales, se asuma que son de silencio.
+
+	 <img src="/img/main_vad_init_power.PNG/" align ="center">
+
+	 Llegamos asi a un FSCORE global de 89,757%, superando en un 5% nuestro autómata anterior. Por lo que estamos muy satisfechos con este cambio.
+
+	 ##### Mejora implementación segundo umbral: Decisión diferida
+
+	 Ahora estamos usando un solo umbral k0, que se define como la potencia media de las primeras tramas más unos pocos decibelios de margen. 
+     Vamos a añadir otro umbral que nos permitirá ser más prudentes haciendo la decisión de que es la trama en cuestión.
+	 Si estamos en silencio, y de repente superamos k0, pasaremos al estado maybe voice, no decidiendo aun si es voice o no. Definimos un segundo umbral, k1 =k0 + alfa1. Para confirmar que se trata de voz, exigimos que la potencia sea mayor a k1 pasado un cierto tiempo, si no se supera, entonces el intervalo era silencioso. 
+	 Haremos lo mismo en caso de que la potencia baje de k1. No confirmaremos que se trata de un silencio, porque se puede tratar por ejemplo de un sonido fricativo sordo que se suele seguir normalmente de un sonido sonoro.
+
+	 Modificamos entonces la gestión que hace del autómata en el vad.c:
+
+	 <img src="/img/umbrales1.PNG/" align ="center">
+	
+	 Esto causara que tengamos muchas tramas clasificadas como UNDEF. Tenemos entonces que modificar lo que se hace con estas tramas en el main (ya que el evaluador entre el .vad y el .lab original no sabe comparar un trama de voz o silencio con una indefinida).
+	 Tratamos de implementar lo siguiente: 
+
+	 <img src="/img/dem.PNG/" align ="center">
+
+	 Es decir, si el estado anterior del autómata es voz, y el nivel de potencia del segmento actual es bajo, el estado sera "maybe silence" o UNDEF en nuesto caso, y no sabremos si es realmente este estado hasta que se acabe de definir el estado de algun segmento futuro. Para ello implementamos la variable "last_defined_state" en el main que nos servira para gestionar correctamente esta dicesión diferida y no dar cabida a la escritura de una trama como UNDEF en los archivos .vad:
+
+	 <img src="/img/umbrales2.PNG/" align ="center">
+	 <img src="/img/umbrales3.PNG/" align ="center">
+	 
+	 Y aseguramos que al acabar la señal en cuestión, no se pueda escriir un estado como UNDEF:
+
+	 <img src="/img/umbrales4.PNG/" align ="center">
+
+	 Si evaluamos nuestro programa en la base de datos, modificando los valores de los umbrales manualmente, llegamos a un FSCORE golbal de 90,378%
+
+	 <img src="/img/umbrales4.PNG/" align ="center">
+	  
 
 
 - Inserte una gráfica en la que se vea con claridad la señal temporal, el etiquetado manual y la detección
   automática conseguida para el fichero grabado al efecto. 
 
+  ##### Ajuste de picos iniciales y final para mejorar la clasificación
+
+  Al principio del audio hay un pequeño ruido que, aunque a priori parece que no afecta mucho, al realizar el power plot vemos que puede realmente confundir al sistema de clasificación:
+
+  <img src="/img/pico.PNG/" align ="center">
+
+  Como se puede ver, el fragmento está marcado como silencio manualmente pero la potencia no es baja, por eso se recortará el fragmento.
+  Se procede a recortar y a mover las labels a donde tocan:
+
+  <img src="/img/no_pico.PNG/" align ="center">
+  
+  Nuevas labels:
+
+  <img src="/img/new_labels.PNG/" align ="center">
+
+  ##### Evaluación sobre nuestro fichero .wav
+  
+  Generamos el .vad con el programa vad. Y evaluamos gracias al script vad_evaluation el rendimiento de nuestro detector sobre la señal, este es el resultado: 
+
+  <img src="/img/eval_wav.PNG/" align ="center">
+
+  Viusalizamos con wavesurfer para ver el resultado de manera gráfica.
+
+  <img src="/img/wavesurfer2.PNG/" align ="center">
 
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
 
+ Vemos que a menudo hay pequeñas tramas de silencio. Estas parecen aparecer cuando nos aproximamos o salimos de tramos de voz. Esto ocurre cuando el autómata duda y no sabe clasificar la trama y se queda en indefinido. Todas estas pequeñas tramas que vemos en la imagen son silencio, por lo que parece que la puntuación de 94% de antes parece razonable.
 
+ Si que hay pequeñas discrepancias. Nuestro autómata no es óptimo del todo y se podría mejorar haciendo que la decisión diferida se haga por tiempo de tramas, teniendo en cuentra otras característias de la señal a parte e la potencia que nos sirvan para discernir si una trama es silencio o voz (por ejemplo la tasa de ruces por 0 o la amplitud). Tmabien se podría hacer un análisis frecuencial de las tramas y mirar tanto la DFT como la densidad de potencia para mejorar el rendimiento de nuestro detector.
 
 ### Trabajos de ampliación
 
@@ -179,10 +254,40 @@ Ejercicios
   la que se vea con claridad la señal antes y después de la cancelación (puede que `wavesurfer` no sea la
   mejor opción para esto, ya que no es capaz de visualizar varias señales al mismo tiempo).
 
+  Antes de sustituir las tramas de silencio por 0, nos hace falta tener disponibles unas tramas que sustituir.
+  Gracias a la función sf_write_float(), vamos escribiendo trama a trama en el fichero .wav de salida (en caso de haberlo especificado al invocar el programa vad)
+
+  <img src="/img/0_1.PNG/" align ="center">
+
+  Tras haber escrito en el .vad el tipo de trama estimada por el automata, en caso de que sea silencio, tendremos que volver hacia atrás exactamente frame_size (ya que la acabamos de escribir), para posteriormente sobreescribir los los valores de esta trama, por 0’s (gracias al buffer_zeros ya dado). Usamos la función sf_seek() para movernos al principio de la trama que acabamos de escribir.
+
+  <img src="/img/sf_seek.PNG/" align ="center">
+
+  Como vemos el caso de error se da cuando esta función devuelve un -1, por lo que verificamos este caso en un if:
+
+  <img src="/img/0_2.PNG/" align ="center">
+
+  Probamos el funcionamiento: 
+
+  <img src="/img/0_3.PNG/" align ="center">
+
+  Percibimos absolutmente toda la voz, con las tramas de ruido en silencio total. Para poder verlo gráficamente procedemos a realizar un simple código en python para poder compararlo.
+
+  Código en python: 
+
+  <img src="/img/python.PNG/" align ="center">
+
+  Gráfica: 
+
+  <img src="/img/graph.PNG/" align ="center">
+
+  Se ve claramente en los segmentos más estrechos (ruido) como se estrechan aun más tras haber sido reemplazados por 0’s.
+  
 #### Gestión de las opciones del programa usando `docopt_c`
 
 - Si ha usado `docopt_c` para realizar la gestión de las opciones y argumentos del programa `vad`, inserte
   una captura de pantalla en la que se vea el mensaje de ayuda del programa.
+
 
 
 ### Contribuciones adicionales y/o comentarios acerca de la práctica
