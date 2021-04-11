@@ -208,7 +208,7 @@ Ejercicios
 
 	 Si evaluamos nuestro programa en la base de datos, modificando los valores de los umbrales manualmente, llegamos a un FSCORE golbal de 90,378%
 
-	 <img src="/img/umbrales4.PNG/" align ="center">
+	 <img src="/img/90.PNG/" align ="center">
 	  
 
 
