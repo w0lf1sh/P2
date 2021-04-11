@@ -112,10 +112,10 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x)
     }
 
     vad_data->init_power = 10 * log10(vad_data->init_power / vad_data->trama);
-    vad_data->k0 = vad_data->init_power + 2; //mejor 3 /2
+    vad_data->k0 = vad_data->init_power + 2; 
     vad_data->state = ST_SILENCE;
 
-    vad_data->k1 = vad_data->k0 + 1.5;  // "2nda frontera" mejor 0: 90,520 /1.5 90.378
+    vad_data->k1 = vad_data->k0 + 1.5; 
 
     break;
 
